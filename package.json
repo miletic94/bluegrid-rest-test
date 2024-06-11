@@ -1,0 +1,22 @@
+{
+  "name": "bluegrid-rest-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-node index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miletic94/bluegrid-rest-test.git"
+  },
+  "author": "Nemanja Miletić",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/miletic94/bluegrid-rest-test/issues"
+  },
+  "homepage": "https://github.com/miletic94/bluegrid-rest-test#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
