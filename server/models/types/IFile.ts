@@ -1,5 +1,3 @@
-export type TFile = Pick<IFile, "name" | "type">;
-export interface IFile extends Document {
+export interface IFile {
   name: string;
-  type: "file";
 }

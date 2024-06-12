@@ -1,16 +1,6 @@
-import mongoose, { Schema } from "mongoose";
-import { IFolder } from "./types/IFolder";
-import { FolderTypeEnum } from "./enums/util.enums";
+import { Schema } from "mongoose";
 
-const folderSchema = new Schema({
+export const folderSchema = new Schema({
   name: { type: String, required: true },
-  type: {
-    type: String,
-    required: true,
-    default: FolderTypeEnum.FOLDER,
-    enum: FolderTypeEnum,
-  },
-  children: [{ type: Schema.Types.Mixed, refPath: "children.type" }],
+  children: [{ type: Schema.Types.Mixed }],
 });
-
-export const FolderModel = mongoose.model<IFolder>("Folder", folderSchema);

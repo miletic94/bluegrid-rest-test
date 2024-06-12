@@ -1,10 +1,4 @@
-import { Document } from "mongoose";
-import { IFile, TFile } from "./IFile";
-
-export type TFolder = Pick<IFolder, "name" | "type" | "children">;
-
-export interface IFolder extends Document {
+export interface IFolder {
   name: string;
-  type: "folder";
-  children: (TFolder | TFile)[];
+  children: (IFolder | String)[];
 }

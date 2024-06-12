@@ -12,7 +12,12 @@ async function createPort(req: Request, res: Response, next: NextFunction) {
   try {
     const dummyPort = new PortModel<TPort>({
       name: "192.96.0.0",
-      folders: [{ name: "folder" }],
+      folders: [
+        {
+          name: "folderA",
+          children: [{ name: "folderB", children: ["a", "b", "c"] }, "fil.txt"],
+        },
+      ],
     });
     const dummyPortDB = await dummyPort.save();
     res.status(200).json(dummyPortDB);
