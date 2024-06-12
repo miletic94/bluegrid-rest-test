@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start-server": "ts-node ./server/server.ts --watch",
-    "test": "ts-node index.ts"
+    "test": "ts-node transformer.ts"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "express": "^4.19.2"
   }
 }

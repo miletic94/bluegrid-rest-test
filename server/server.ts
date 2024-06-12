@@ -1,12 +1,7 @@
 import { globalErrorHandler } from "./middleware/filters/global-error-handler";
 import { connectToDatabase } from "./providers/db/mongo";
 import filesRouter from "./routes/files.routes";
-import express, {
-  ErrorRequestHandler,
-  NextFunction,
-  Request,
-  Response,
-} from "express";
+import express from "express";
 const port = 3000;
 
 async function startServer() {
