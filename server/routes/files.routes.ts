@@ -1,9 +1,11 @@
 import { Router } from "express";
-import FilesController from "../controllers/files.controller";
+import { PortController } from "../controllers/port.controller";
+import { PortRepository } from "../repositories/port.repository";
 
 const router = Router();
 
-router.get("/files", FilesController.getAllFiles);
-router.post("/files", FilesController.createPort);
+// TODO: Consider DI container to manage dependencies
+const controller = new PortController(new PortRepository());
+router.get("/files", controller.getAllPorts.bind(controller));
 
 export default router;
