@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-server": "ts-node ./server/server.ts --watch",
-    "test": "ts-node transformer.ts"
+    "start-server": "ts-node ./server/server.ts",
+    "transform": "ts-node transformer.ts",
+    "start": "npm run transform & npm run start-server"
   },
   "repository": {
     "type": "git",
