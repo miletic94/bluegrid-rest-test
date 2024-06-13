@@ -2,7 +2,7 @@ import * as fs from "fs";
 
 import axios from "axios";
 import { ResourceTypeEnum } from "../enums/ResourceTypeEnum";
-import { FILE_EXTENSION_REGEX, URL_SEGMENTS_REGEX } from "../constants/regex";
+import { FILE_EXTENSION_REGEX, URL_SEGMENTS_REGEX } from "./constants/regex";
 import { RawData } from "./types/data.type";
 
 export class Transformer {
