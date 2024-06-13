@@ -31,10 +31,7 @@ export class Transformer {
   fullDataFilePath = "./test-data-full.json";
 
   async transformData() {
-    const data: Data = await this.getData(
-      ResourceTypeEnum.FILE_SYSTEM,
-      this.fullDataFilePath
-    );
+    const data: Data = await this.getData(ResourceTypeEnum.REMOTE_RESOURCE);
     const rootObj = {};
 
     for (let item of data.items) {
@@ -134,7 +131,5 @@ export class Transformer {
   }
 }
 
-console.time("transforming");
 const t = new Transformer();
 t.transformData();
-console.timeEnd("transforming");
