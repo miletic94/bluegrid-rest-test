@@ -1,0 +1,7 @@
+If data was really big and it changes from time to time:
+- Use jobs or different independent process and cron like scheduler to update the data periodically
+- What if request happens while database is getting updated (create backup that serves until data is updated)
+
+If data resource can change structure of data or make errors:
+- Create data validation 
+- Create system to save data that couldn't be parsed
