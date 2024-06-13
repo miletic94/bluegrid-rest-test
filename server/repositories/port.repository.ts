@@ -1,27 +1,43 @@
-import { Data } from "../../types/data.type";
-import { Port } from "../models/ports.schema";
-import { TPort } from "../models/types/IPort";
+import axios from "axios";
+import { ResourceTypeEnum } from "../../enums/ResourceTypeEnum";
 import * as fs from "fs";
+import path from "path";
+import { DATA_RESOURCE_DIRECTORY } from "../../data-resources/root-directory";
+import { FULL_DATA_PATH_REMOTE } from "../../data-resources/data-resources";
 
-//Functions from Repository do async operations. Make sure to await for them.
 export class PortRepository {
   getAllPorts() {
-    // return Port.find();
-    const filePath = "./data.json";
+    const filePath = path.join(DATA_RESOURCE_DIRECTORY, "data.txt");
     return JSON.parse(fs.readFileSync(filePath, "utf-8"));
   }
 
-  createBulk(data: Data) {
-    Port.insertMany(data);
+  // get raw data for transformer
+  async getRawData(
+    resourceType = ResourceTypeEnum.FILE_SYSTEM,
+    filePath?: string
+  ) {
+    switch (resourceType) {
+      case ResourceTypeEnum.FILE_SYSTEM:
+        if (filePath == undefined) throw Error("File path must be defined");
+        return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      case ResourceTypeEnum.REMOTE_RESOURCE:
+        const res = await axios.get(FULL_DATA_PATH_REMOTE);
+        return res.data;
+    }
   }
 
-  // TODO: Remove. Method for testing
-  async createOne() {
-    const m = new Map();
-    m.set("name", "folder");
-    m.set("contents", []);
-    const data = new Port({ name: "new port", contents: [] });
-    await data.save();
-    return data;
+  // TODO: Better type for transformed data
+  writeTransformedData(transformData: string) {
+    fs.writeFile(
+      path.join(DATA_RESOURCE_DIRECTORY, "data.txt"),
+      transformData,
+      (err) => {
+        if (err) {
+          console.error("Error writing file:", err);
+        } else {
+          console.log("File written successfully");
+        }
+      }
+    );
   }
 }
