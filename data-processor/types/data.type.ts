@@ -1,1 +1,1 @@
-export type RawData = { items: [{ fileUrl: string }] };
+export type RawData = { items: Array<{ fileUrl: string }> };
