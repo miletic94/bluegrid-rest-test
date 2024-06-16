@@ -4,7 +4,7 @@ import { RawData, Result } from "./types/data.type";
 
 export class Transformer {
   /**
-   * Transforms raw data into a structured ArrayMap representation and then into a result data format.
+   * Transforms raw data into a structured ArrayMap representation.
    *
    * @param {RawData} rawData - The raw data of type {@link RawData } to transform.
    * @returns The transformed result data.
@@ -31,9 +31,6 @@ export class Transformer {
       this.segmentsToArrayMap(rootObj, urlSegments, firstIndex);
     }
 
-    // If we wanted to make it easier to add new data, we could return rootObj here
-    // That way we would save ArrayMap object, that is designed to make writing new data efficient
-    // Then we would transform data with transformArrayMapToResultData while receiving data. That would save some memory, but it would also make API a bit slower.
     return rootObj;
   }
 
