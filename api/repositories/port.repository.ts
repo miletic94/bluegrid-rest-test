@@ -1,21 +1,30 @@
 import axios from "axios";
 import { ResourceTypeEnum } from "../../enums/ResourceTypeEnum";
 import * as fs from "fs";
-import path from "path";
-import { DATA_RESOURCE_DIRECTORY } from "../../data-resources/root-directory";
-import { FULL_DATA_PATH_REMOTE } from "../../data-resources/data-resources";
+import { PATH_TO_API_DATA } from "../../data-resources/local-resources.const";
+import { FULL_DATA_PATH_REMOTE } from "../../data-resources/remote-data-resources.const";
+import { RawData } from "../../data-processor/types/data.type";
 
 export class PortRepository {
   getAllPorts() {
-    const filePath = path.join(DATA_RESOURCE_DIRECTORY, "data.txt");
-    return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    try {
+      const data = fs.readFileSync("DATA.SM", "utf-8");
+      return JSON.parse(data);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`Error reading file: ${error.message}`);
+        throw new Error(`Error reading file: ${error.message}`);
+      } else {
+        console.error("Unknown error occurred:", error);
+      }
+    }
   }
-
   // get raw data for transformer
   async getRawData(
     resourceType = ResourceTypeEnum.FILE_SYSTEM,
     filePath?: string
-  ) {
+  ): Promise<RawData> {
+    console.log("Getting raw data");
     switch (resourceType) {
       case ResourceTypeEnum.FILE_SYSTEM:
         if (filePath == undefined) throw Error("File path must be defined");
@@ -26,18 +35,14 @@ export class PortRepository {
     }
   }
 
-  // TODO: Better type for transformed data
   writeTransformedData(transformData: string) {
-    fs.writeFile(
-      path.join(DATA_RESOURCE_DIRECTORY, "data.txt"),
-      transformData,
-      (err) => {
-        if (err) {
-          console.error("Error writing file:", err);
-        } else {
-          console.log("File written successfully");
-        }
+    console.log("Writing data to file");
+    fs.writeFile(PATH_TO_API_DATA, transformData, (err) => {
+      if (err) {
+        console.error("Error writing file:", err);
+      } else {
+        console.log("File written successfully");
       }
-    );
+    });
   }
 }

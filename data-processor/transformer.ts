@@ -1,78 +1,116 @@
+import { ArrayMap } from "./ArrayMap";
 import { FILE_EXTENSION_REGEX, URL_SEGMENTS_REGEX } from "./constants/regex";
-import { RawData } from "./types/data.type";
+import { RawData, Result } from "./types/data.type";
 
 export class Transformer {
-  transformData(rawData: RawData) {
-    const rootObj = {};
+  /**
+   * Transforms raw data into a structured ArrayMap representation and then into a result data format.
+   *
+   * @param {RawData} rawData - The raw data of type {@link RawData } to transform.
+   * @returns The transformed result data.
+   */
+  transformRawData(rawData: RawData) {
+    console.log("Transforming data to arrayMap object");
+    // rootArrayMap object where final result will be stored
+    const rootObj = new ArrayMap("root", [], new Map());
 
     for (let item of rawData.items) {
-      const pathString = item.fileUrl;
-      const pathSegments = pathString.match(URL_SEGMENTS_REGEX);
-      if (!pathSegments) {
+      const urlString = item.fileUrl;
+      const urlSegments = urlString.match(URL_SEGMENTS_REGEX);
+      if (!urlSegments) {
         // Here we can create some document to store all strings that didn't match the regex in order to test regex and validate strings and not crash application
         // We could also decouple this to some kind of validator
         console.warn(
-          `String ${pathString} get no matches from URL_SEGMENTS_REGEX. Either regex or string are not valid`
+          `String ${urlString} get no matches from URL_SEGMENTS_REGEX. Either regex or string are not valid`
         );
         continue;
       }
-      // index of the first pathSegment whose value isn't "http:"
+      // index of the first urlSegment whose value isn't "http:"
       const firstIndex = 1;
 
-      this.pathStringToObject(
-        pathSegments[firstIndex],
-        rootObj,
-        pathSegments,
-        firstIndex
-      );
+      this.segmentsToArrayMap(rootObj, urlSegments, firstIndex);
     }
 
-    return JSON.stringify(this.objectToArrays(rootObj));
+    // If we wanted to make it easier to add new data, we could return rootObj here
+    // That way we would save ArrayMap object, that is designed to make writing new data efficient
+    // Then we would transform data with transformArrayMapToResultData while receiving data. That would save some memory, but it would also make API a bit slower.
+    return rootObj;
   }
 
-  private pathStringToObject(
-    value: string,
-    obj: Record<string, Record<any, any>>,
-    segments: string[],
-    i = 1
-  ) {
-    if (segments[i] === undefined) return;
+  /**
+   * Converts segments of a url into an ArrayMap structure.
+   *
+   * @param {ArrayMap} arrayMap - The {@link ArrayMap} to populate with segments.
+   * @param {string[]} segments - Array of the segments of the url to convert.
+   * @param i - The current index in the segments array (default is 1).
+   *
+   * @remarks
+   * This function is used to recursively transform segments of url into an ArrayMap structure.
+   * It updates the provided ArrayMap with the segments and checks if the current segment is a file name.
+   *
+   * @example
+   * ```typescript
+   * const arrayMap = new ArrayMap('root', [], new Map());
+   * const segments = ['196.172.0.0', 'folder', 'file.txt'];
+   * segmentsToArrayMap(arrayMap, segments);
+   * // arrayMap will be updated with the structure representing the url.
+   * ```
+   */
+  private segmentsToArrayMap(arrayMap: ArrayMap, segments: string[], i = 1) {
+    const currentSegment = segments[i];
+    if (currentSegment === undefined) return;
+
     if (i === segments.length - 1) {
-      if (this.isFileName(segments[i])) {
-        if (Array.isArray(obj["files"])) {
-          obj["files"].push(segments[i]);
-        } else {
-          obj["files"] = [];
-          obj["files"].push(segments[i]);
-        }
+      if (this.isFileName(currentSegment)) {
+        arrayMap.array.push(currentSegment);
         return;
       }
     }
 
-    if (!(value in obj)) {
-      obj[value] = {};
+    if (!arrayMap.map.has(currentSegment)) {
+      arrayMap.map.set(currentSegment, { index: arrayMap.array.length });
+      arrayMap.array.push(new ArrayMap(currentSegment, [], new Map()));
     }
-    this.pathStringToObject(segments[i + 1], obj[value], segments, ++i);
+
+    const v = arrayMap.map.get(currentSegment);
+    if (v != undefined) {
+      this.segmentsToArrayMap(
+        arrayMap.array[v.index] as ArrayMap,
+        segments,
+        ++i
+      );
+    }
   }
 
-  private objectToArrays(obj: any): any {
-    return Object.keys(obj).map((key) => {
-      if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
-        // Recursively transform nested objects
-        return { [key]: this.objectToArrays(obj[key]) };
-      } else if (Array.isArray(obj[key])) {
-        // Directly map arrays
-        return obj[key];
+  /**
+   * Recursively transforms the data from ArrayMap to wanted result of Result type
+   * @param {ArrayMap} arrayMap
+   * @returns {Result} - Returns part of the whole result of type {@link Result}
+   */
+  transformArrayMapToResultData(arrayMap: ArrayMap) {
+    const res: Result = [];
+    if (arrayMap.array.length === 0) {
+      return [];
+    }
+
+    for (const e of arrayMap.array) {
+      if (e instanceof ArrayMap) {
+        res.push({ [e.name]: this.transformArrayMapToResultData(e) });
       } else {
-        // Handle other types directly
-        return { [key]: [] };
+        res.push(e);
       }
-    });
+    }
+    return res;
   }
 
-  // To check if path leads to a file (and not folder) you can use this function. If path is ending with segment that has dot and three or four letter characters at the end it is very likely that it is a file.
-  // This hypothesis could be tested further by testing ending characters against the list of known file extensions.
-  private isFileName(str: string) {
-    return FILE_EXTENSION_REGEX.test(str);
+  /**
+   * Checks if a string is a valid file name.
+   * @param segment - The segment to check.
+   * @returns {boolean} `true` if the segment is a file name, otherwise `false`.
+   */
+  isFileName(segment: string) {
+    return FILE_EXTENSION_REGEX.test(segment);
   }
 }
+
+// TODO: Test

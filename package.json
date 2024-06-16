@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start-server": "ts-node ./server/server.ts",
+    "start-server": "ts-node ./api/server.ts",
     "transform": "ts-node ./data-processor/index.ts",
     "start": "npm run transform & npm run start-server",
     "type-docs": "typedoc"

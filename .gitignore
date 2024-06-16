@@ -1,1 +1,4 @@
 node_modules
+npm-debug.log
+data-resources/data/*
+!data-resources/data/.gitignore
