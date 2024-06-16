@@ -1,5 +1,3 @@
-// TODO: Document this
-
 import { RawData } from "./data-processor/types/data.type";
 
 const FILE_EXTENSION_REGEX = /\.\w{3,4}$/;

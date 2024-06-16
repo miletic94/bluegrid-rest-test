@@ -1,4 +1,4 @@
-import { PortRepository } from "../server/repositories/port.repository";
+import { PortRepository } from "../api/repositories/port.repository";
 import { DataProcessor } from "./data-processor";
 import { Transformer } from "./transformer";
 

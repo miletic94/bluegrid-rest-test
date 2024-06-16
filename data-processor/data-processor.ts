@@ -1,5 +1,5 @@
 import { ResourceTypeEnum } from "../enums/ResourceTypeEnum";
-import { PortRepository } from "../server/repositories/port.repository";
+import { PortRepository } from "../api/repositories/port.repository";
 import { Transformer } from "./transformer";
 
 export class DataProcessor {
